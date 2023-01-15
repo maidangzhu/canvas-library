@@ -43,7 +43,62 @@ export class Application {
     window.requestAnimationFrame(this.step.bind(this));
   }
 
-  public update (elapsedMsec: number, intervalMsec: number) {}
+  public update(elapsedMsec: number, intervalMsec: number) {
+  }
 
-  public render () {}
+  public render() {
+  }
+}
+
+export enum EInputEventType {
+  MOUSEEVENT,
+  MOUSEDOWN,
+  MOUSEUP,
+  MOUSEMOVE,
+  MOUSEDRAG,
+  KEYBOARDEVENT,
+  KEYUP,
+  KEYDOWN,
+  KEYPRESS
+}
+
+export class CanvasInputEvent {
+  public altKey: boolean;
+  public ctrlKey: boolean;
+  public metaKey: boolean;
+  public shiftKey: boolean;
+
+  public type: EInputEventType;
+
+  public constructor(altKey: boolean = false, ctrlKey: boolean = false, metaKey: boolean = false, shiftKey: boolean = false, type: EInputEventType = EInputEventType.MOUSEEVENT) {
+    this.altKey = altKey;
+    this.ctrlKey = ctrlKey;
+    this.metaKey = metaKey;
+    this.shiftKey = shiftKey;
+    this.type = type;
+  }
+}
+
+export class CanvasMouseEvent extends CanvasInputEvent {
+  public button: number; // 0 1 2
+  public canvasPosition: vec2;
+  public localPosition: vec2;
+  public constructor(canvasPos: vec2, button: number, altKey: boolean = false, ctrlKey: boolean = false, metaKey: boolean = false, shiftKey: boolean = false) {
+    super(altKey, ctrlKey, metaKey, shiftKey);
+    this.canvasPosition = canvasPos;
+    this.button = button;
+    this.localPosition = vec2.create();
+  }
+}
+
+export class CanvasKeyboardEvent extends CanvasInputEvent {
+  public key: string;
+  public keyCode: number;
+  public repeat: boolean;
+  public constructor(key: string, keyCode: number, repeat: boolean, altKey: boolean = false, ctrlKey: boolean = false, metaKey: boolean = false, shiftKey: boolean = false) {
+    super(altKey, ctrlKey, metaKey, shiftKey);
+    this.key = key;
+    this.keyCode = keyCode;
+    this.repeat = repeat;
+  }
 }
