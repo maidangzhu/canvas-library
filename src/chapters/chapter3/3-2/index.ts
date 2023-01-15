@@ -48,6 +48,30 @@ export class Application {
 
   public render() {
   }
+
+  private _viewportToCanvasCoordinate(evt: MouseEvent): vec2 {
+    if (this.canvas) {
+      let rect: ClientRect = this.canvas.getBoundingClientRect();
+
+      const x: number = evt.clientX - rect.left;
+      const y: number = evt.clientY - rect.top;
+
+      return vec2.create(x, y);
+    }
+
+    throw new Error("canvas is null");
+  }
+
+  private _toCanvasMouseEvent(evt: Event): CanvasMouseEvent {
+    let event: MouseEvent = evt as MouseEvent;
+    let mousePosition: vec2 = this._viewportToCanvasCoordinate(event);
+    return new CanvasMouseEvent(mousePosition, event.altKey, event.ctrlKey, event.shiftKey, event.metaKey, event.shiftKey);
+  }
+
+  private _toCanvasKeyboardEvent(evt: Event): CanvasKeyboardEvent {
+    let event: KeyboardEvent = evt as KeyboardEvent;
+    return new CanvasKeyboardEvent(event.key, event.keyCode, event.repeat, event.altKey, event.ctrlKey, event.shiftKey, event.metaKey, event.shiftKey);
+  }
 }
 
 export enum EInputEventType {
