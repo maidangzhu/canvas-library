@@ -56,19 +56,19 @@ export class Application implements EventListenerObject {
     }
   }
 
-  public dispatchMouseDown(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseDown(evt: CanvasMouseEvent): any {}
 
-  public dispatchMouseMove(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseMove(evt: CanvasMouseEvent): any {}
 
-  public dispatchMouseUp(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseUp(evt: CanvasMouseEvent): any {}
 
-  public dispatchMouseDrag(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseDrag(evt: CanvasMouseEvent): any {}
 
-  public dispatchKeyPress(evt: CanvasKeyboardEvent): any {}
+  protected dispatchKeyPress(evt: CanvasKeyboardEvent): any {}
 
-  public dispatchKeyDown(evt: CanvasKeyboardEvent): any {}
+  protected dispatchKeyDown(evt: CanvasKeyboardEvent): any {}
 
-  public dispatchKeyUp(evt: CanvasKeyboardEvent): any {}
+  protected dispatchKeyUp(evt: CanvasKeyboardEvent): any {}
 
   public start() {
     if (!this._start) {
@@ -138,8 +138,6 @@ export class Application implements EventListenerObject {
     let event: KeyboardEvent = evt as KeyboardEvent;
     return new CanvasKeyboardEvent(event.key, event.keyCode, event.repeat, event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
   }
-
-
 }
 
 export enum EInputEventType {
@@ -195,4 +193,25 @@ export class CanvasKeyboardEvent extends CanvasInputEvent {
   }
 }
 
+export class Canvas2DApplication extends Application {
+  public context2D: CanvasRenderingContext2D | null;
+  public constructor(canvas: HTMLCanvasElement, contextAttributes?: CanvasRenderingContext2D) {
+    super(canvas);
+    this.context2D = this.canvas.getContext('2d', contextAttributes) as CanvasRenderingContext2D;
+  }
+}
 
+export class WebGLApplication extends Application {
+  public context3D: WebGLRenderingContext | null;
+  public constructor(canvas: HTMLCanvasElement, contextAttributes?: WebGLRenderingContext) {
+    super(canvas);
+    this.context3D = this.canvas.getContext('webgl', contextAttributes) as WebGLRenderingContext;
+    if (!this.context3D) {
+      this.context3D = this.canvas.getContext("experimental-webgl", contextAttributes) as WebGLRenderingContext;
+
+      if (!this.context3D) {
+        throw new Error("Could not create WebGL context");
+      }
+    }
+  }
+}
