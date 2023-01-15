@@ -1,8 +1,74 @@
-export class Application {
+interface EventListenerObject {
+  handleEvent(evt: Event): void;
+}
+
+export class Application implements EventListenerObject {
   protected _start: boolean = false;
   protected _requestId: number = -1;
   protected _lastTIme!: number;
   protected _startTime!: number;
+  public isSupportMouseMove: boolean;
+  protected canvas: HTMLCanvasElement;
+  protected _isMouseDown: boolean;
+
+  public constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+    this.canvas.addEventListener('mousedown', this, false);
+    this.canvas.addEventListener('mouseup', this, false);
+    this.canvas.addEventListener('mousemove', this, false);
+
+    window.addEventListener('keydown', this, false);
+    window.addEventListener('keyup', this, false);
+    window.addEventListener('keypress', this, false);
+
+    this._isMouseDown = false;
+    this.isSupportMouseMove = false;
+  }
+
+
+  public handleEvent(evt: Event): void {
+    switch (evt.type) {
+      case'mousedown':
+        this._isMouseDown = true;
+        this.dispatchMouseDown(this._toCanvasMouseEvent(evt));
+        break;
+      case'mousemove':
+        if (this.isSupportMouseMove) {
+          this.dispatchMouseMove(this._toCanvasMouseEvent(evt));
+        }
+        if (this._isMouseDown) {
+          this.dispatchMouseDrag(this._toCanvasMouseEvent(evt));
+        }
+        break;
+      case "mouseup":
+        this._isMouseDown = false;
+        this.dispatchMouseUp(this._toCanvasMouseEvent(evt));
+        break;
+      case "keypress":
+        this.dispatchKeyPress(this._toCanvasKeyboardEvent(evt));
+        break;
+      case "keydown":
+        this.dispatchKeyDown(this._toCanvasKeyboardEvent(evt));
+        break;
+      case "keyup":
+        this.dispatchKeyUp(this._toCanvasKeyboardEvent(evt));
+        break;
+    }
+  }
+
+  public dispatchMouseDown(evt: CanvasMouseEvent): any {}
+
+  public dispatchMouseMove(evt: CanvasMouseEvent): any {}
+
+  public dispatchMouseUp(evt: CanvasMouseEvent): any {}
+
+  public dispatchMouseDrag(evt: CanvasMouseEvent): any {}
+
+  public dispatchKeyPress(evt: CanvasKeyboardEvent): any {}
+
+  public dispatchKeyDown(evt: CanvasKeyboardEvent): any {}
+
+  public dispatchKeyUp(evt: CanvasKeyboardEvent): any {}
 
   public start() {
     if (!this._start) {
@@ -65,13 +131,15 @@ export class Application {
   private _toCanvasMouseEvent(evt: Event): CanvasMouseEvent {
     let event: MouseEvent = evt as MouseEvent;
     let mousePosition: vec2 = this._viewportToCanvasCoordinate(event);
-    return new CanvasMouseEvent(mousePosition, event.altKey, event.ctrlKey, event.shiftKey, event.metaKey, event.shiftKey);
+    return new CanvasMouseEvent(mousePosition, event.button, event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
   }
 
   private _toCanvasKeyboardEvent(evt: Event): CanvasKeyboardEvent {
     let event: KeyboardEvent = evt as KeyboardEvent;
-    return new CanvasKeyboardEvent(event.key, event.keyCode, event.repeat, event.altKey, event.ctrlKey, event.shiftKey, event.metaKey, event.shiftKey);
+    return new CanvasKeyboardEvent(event.key, event.keyCode, event.repeat, event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
   }
+
+
 }
 
 export enum EInputEventType {
@@ -126,3 +194,5 @@ export class CanvasKeyboardEvent extends CanvasInputEvent {
     this.repeat = repeat;
   }
 }
+
+
