@@ -1,3 +1,5 @@
+import {vec2} from "./math2d" ;
+
 interface EventListenerObject {
   handleEvent(evt: Event): void;
 }
@@ -56,33 +58,39 @@ export class Application implements EventListenerObject {
     }
   }
 
-  protected dispatchMouseDown(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseDown(evt: CanvasMouseEvent): any {
+  }
 
-  protected dispatchMouseMove(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseMove(evt: CanvasMouseEvent): any {
+  }
 
-  protected dispatchMouseUp(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseUp(evt: CanvasMouseEvent): any {
+  }
 
-  protected dispatchMouseDrag(evt: CanvasMouseEvent): any {}
+  protected dispatchMouseDrag(evt: CanvasMouseEvent): any {
+  }
 
-  protected dispatchKeyPress(evt: CanvasKeyboardEvent): any {}
+  protected dispatchKeyPress(evt: CanvasKeyboardEvent): any {
+  }
 
-  protected dispatchKeyDown(evt: CanvasKeyboardEvent): any {}
+  protected dispatchKeyDown(evt: CanvasKeyboardEvent): any {
+  }
 
-  protected dispatchKeyUp(evt: CanvasKeyboardEvent): any {}
+  protected dispatchKeyUp(evt: CanvasKeyboardEvent): any {
+  }
 
   public start() {
     if (!this._start) {
       this._start = true;
-      this._requestId = -1;
       this._startTime = -1;
       this._lastTIme = -1;
-      this._requestId = requestAnimationFrame(this.step.bind(this));
+      this._requestId = window.requestAnimationFrame(this.step.bind(this));
     }
   }
 
   public stop() {
     if (this._start) {
-      cancelAnimationFrame(this._requestId);
+      window.cancelAnimationFrame(this._requestId);
       this._start = false;
       this._requestId = -1;
       this._startTime = -1;
@@ -119,13 +127,44 @@ export class Application implements EventListenerObject {
     if (this.canvas) {
       let rect: ClientRect = this.canvas.getBoundingClientRect();
 
-      const x: number = evt.clientX - rect.left;
-      const y: number = evt.clientY - rect.top;
+      if (evt.target) {
+        let borderLeftWidth: number = 0;
+        let borderTopWidth: number = 0;
+        let paddingLeft: number = 0;
+        let paddingTop: number = 0;
+        let decl: CSSStyleDeclaration = window.getComputedStyle(evt.target as HTMLElement);
+        let strNumber: string | null = decl.borderLeftWidth;
 
-      return vec2.create(x, y);
+        if (strNumber !== null) {
+          borderLeftWidth = parseInt(strNumber, 10);
+        }
+
+        if (strNumber !== null) {
+          borderTopWidth = parseInt(strNumber, 10);
+        }
+
+        strNumber = decl.paddingLeft;
+        if (strNumber !== null) {
+          paddingLeft = parseInt(strNumber, 10);
+        }
+
+        strNumber = decl.paddingTop;
+        if (strNumber !== null) {
+          paddingTop = parseInt(strNumber, 10);
+        }
+
+        let x: number = evt.clientX - rect.left - borderLeftWidth - paddingLeft;
+        let y: number = evt.clientY - rect.top - borderTopWidth - paddingTop;
+
+        let pos: vec2 = vec2.create(x, y);
+
+        return pos;
+      }
+
+      throw new Error("canvas为null");
     }
 
-    throw new Error("canvas is null");
+    throw new Error("evt . target为null");
   }
 
   private _toCanvasMouseEvent(evt: Event): CanvasMouseEvent {
@@ -173,6 +212,7 @@ export class CanvasMouseEvent extends CanvasInputEvent {
   public button: number; // 0 1 2
   public canvasPosition: vec2;
   public localPosition: vec2;
+
   public constructor(canvasPos: vec2, button: number, altKey: boolean = false, ctrlKey: boolean = false, metaKey: boolean = false, shiftKey: boolean = false) {
     super(altKey, ctrlKey, metaKey, shiftKey);
     this.canvasPosition = canvasPos;
@@ -185,6 +225,7 @@ export class CanvasKeyboardEvent extends CanvasInputEvent {
   public key: string;
   public keyCode: number;
   public repeat: boolean;
+
   public constructor(key: string, keyCode: number, repeat: boolean, altKey: boolean = false, ctrlKey: boolean = false, metaKey: boolean = false, shiftKey: boolean = false) {
     super(altKey, ctrlKey, metaKey, shiftKey);
     this.key = key;
@@ -195,6 +236,7 @@ export class CanvasKeyboardEvent extends CanvasInputEvent {
 
 export class Canvas2DApplication extends Application {
   public context2D: CanvasRenderingContext2D | null;
+
   public constructor(canvas: HTMLCanvasElement, contextAttributes?: CanvasRenderingContext2D) {
     super(canvas);
     this.context2D = this.canvas.getContext('2d', contextAttributes) as CanvasRenderingContext2D;
@@ -203,6 +245,7 @@ export class Canvas2DApplication extends Application {
 
 export class WebGLApplication extends Application {
   public context3D: WebGLRenderingContext | null;
+
   public constructor(canvas: HTMLCanvasElement, contextAttributes?: WebGLRenderingContext) {
     super(canvas);
     this.context3D = this.canvas.getContext('webgl', contextAttributes) as WebGLRenderingContext;

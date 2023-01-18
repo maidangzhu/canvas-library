@@ -1,12 +1,12 @@
 import {Application, CanvasKeyboardEvent, CanvasMouseEvent} from "./application";
 
-class ApplicationText extends Application {
+export class ApplicationTest extends Application {
   protected dispatchMouseDown(evt: CanvasMouseEvent) {
     console.log('canvasPosition: ', evt.canvasPosition);
   }
 
   protected dispatchKeyDown(evt: CanvasKeyboardEvent): any {
-    console.log('key: ', evt.key + 'is down');
+    console.log('key: ', evt.key + ' is down');
   }
 
   public update(elapsedMsec: number, intervalMsec: number) {

@@ -1,12 +1,9 @@
-import {step} from "./chapters/chapter3/3-1-3";
+import Test from "./chapters/chapter3/3-2/src";
 
 function App() {
-  console.log('reload')
-  // window.requestAnimationFrame(step);
-
   return (
-    <div className="App">
-      request animation
+    <div>
+      <Test />
     </div>
   )
 }
