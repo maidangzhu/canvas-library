@@ -1,10 +1,30 @@
 import {vec2} from "./math2d" ;
 
+export type TimerCallback = (id: number, data: any) => void;
+
+class Timer {
+  public id: number = -1;
+  public enabled: boolean = false;
+
+  public callback: TimerCallback;
+  public callbackData: any = undefined;
+
+  public countdown: number = 0;
+  public timeout: number = 0;
+  public onlyOnce: boolean = false;
+
+  constructor(callback: TimerCallback) {
+    this.callback = callback;
+  }
+}
+
 interface EventListenerObject {
   handleEvent(evt: Event): void;
 }
 
 export class Application implements EventListenerObject {
+  public timers: Timer[] = [];
+  private _timerId: number = -1;
   protected _start: boolean = false;
   protected _requestId: number = -1;
   protected _lastTIme!: number;
@@ -176,6 +196,65 @@ export class Application implements EventListenerObject {
   private _toCanvasKeyboardEvent(evt: Event): CanvasKeyboardEvent {
     let event: KeyboardEvent = evt as KeyboardEvent;
     return new CanvasKeyboardEvent(event.key, event.keyCode, event.repeat, event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+  }
+
+  public addTimer(callback: TimerCallback, timeout: number = 1.0, onlyOnce: boolean = false, data: any = undefined): number {
+    let timer: Timer
+    let found: boolean = false;
+    for (let i = 0; i < this.timers.length; i++) {
+      let timer: Timer = this.timers [i];
+      if (!timer.enabled) {
+        timer.callback = callback;
+        timer.callbackData = data;
+        timer.timeout = timeout;
+        timer.countdown = timeout;
+        timer.enabled = true;
+        timer.onlyOnce = onlyOnce;
+        return timer.id;
+      }
+    }
+
+    timer = new Timer(callback);
+    timer.callbackData = data;
+    timer.timeout = timeout;
+    timer.countdown = timeout;
+    timer.enabled = true;
+    timer.id = ++this._timerId;
+    timer.onlyOnce = onlyOnce;
+
+    this.timers.push(timer);
+    return timer.id;
+  }
+
+  public removeTimer(id: number): boolean {
+    let found: boolean = false;
+    for (let i = 0; i < this.timers.length; i++) {
+      if (this.timers [i].id === id) {
+        let timer: Timer = this.timers [i];
+        timer.enabled = false;
+        found = true;
+        break;
+      }
+    }
+    return found;
+  }
+
+  private _handleTimers(intervalSec: number): void {
+    for (let i = 0; i < this.timers.length; i++) {
+      let timer: Timer = this.timers [i];
+      if (!timer.enabled) {
+        continue;
+      }
+      timer.countdown -= intervalSec;
+      if (timer.countdown < 0.0) {
+        timer.callback(timer.id, timer.callbackData);
+        if (!timer.onlyOnce) {
+          timer.countdown = timer.timeout;
+        } else {
+          this.removeTimer(timer.id);
+        }
+      }
+    }
   }
 }
 
