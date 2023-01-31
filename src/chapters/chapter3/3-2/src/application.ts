@@ -25,6 +25,7 @@ interface EventListenerObject {
 export class Application implements EventListenerObject {
   public timers: Timer[] = [];
   private _timerId: number = -1;
+  private _fps: number = 0;
   protected _start: boolean = false;
   protected _requestId: number = -1;
   protected _lastTIme!: number;
@@ -122,6 +123,10 @@ export class Application implements EventListenerObject {
     return this._start;
   }
 
+  public get fps() {
+    return this._fps;
+  }
+
   protected step(timeStamp: number) {
     if (this._startTime === -1) this._startTime = timeStamp;
     if (this._lastTIme === -1) this._lastTIme = timeStamp;
@@ -129,8 +134,13 @@ export class Application implements EventListenerObject {
     let elapsedMsec: number = timeStamp - this._startTime;
     let intervalMsec: number = timeStamp - this._lastTIme;
 
-    this._lastTIme = timeStamp;
+    if (intervalMsec !== 0) {
+      this._fps = 1000.0 / intervalMsec;
+    }
 
+    intervalMsec /= 1000.0;
+    this._lastTIme = timeStamp;
+    this._handleTimers(intervalMsec);
     this.update(elapsedMsec, intervalMsec);
     this.render()
 
