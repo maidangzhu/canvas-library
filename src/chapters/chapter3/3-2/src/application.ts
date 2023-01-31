@@ -132,22 +132,24 @@ export class Application implements EventListenerObject {
     if (this._lastTIme === -1) this._lastTIme = timeStamp;
 
     let elapsedMsec: number = timeStamp - this._startTime;
-    let intervalMsec: number = timeStamp - this._lastTIme;
+    let intervalSec: number = timeStamp - this._lastTIme;
 
-    if (intervalMsec !== 0) {
-      this._fps = 1000.0 / intervalMsec;
+    if (intervalSec !== 0) {
+      this._fps = 1000.0 / intervalSec;
     }
 
-    intervalMsec /= 1000.0;
+    intervalSec /= 1000.0;
     this._lastTIme = timeStamp;
-    this._handleTimers(intervalMsec);
-    this.update(elapsedMsec, intervalMsec);
+    this._handleTimers(intervalSec);
+    this.update(elapsedMsec, intervalSec);
     this.render()
 
-    window.requestAnimationFrame(this.step.bind(this));
+    requestAnimationFrame((elapsedMsec: number): void => {
+      this.step(elapsedMsec);
+    });
   }
 
-  public update(elapsedMsec: number, intervalMsec: number) {
+  public update(elapsedMsec: number, intervalSec: number) {
   }
 
   public render() {
