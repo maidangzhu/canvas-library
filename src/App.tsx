@@ -1,4 +1,4 @@
-import Test from "./chapters/chapter3/3-2/src";
+import Test from "./index";
 
 function App() {
   return (
