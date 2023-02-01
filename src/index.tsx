@@ -1,5 +1,6 @@
 import {useEffect} from "react";
 import {Application} from "./application";
+import {TestApplication} from "./TestApplication";
 import "./applicationTest.less";
 
 function Test() {
@@ -9,10 +10,9 @@ function Test() {
     }
 
     let canvas: HTMLCanvasElement | null = document.getElementById("canvas") as HTMLCanvasElement
-    let app: Application = new Application(canvas)
-    let timer0: number = app.addTimer(timerCallback, 5, false, " data是timeCallback的数据 ");
-    let timer1: number = app.addTimer(timerCallback, 5, true, " data是timeCallback的数据 ");
-
+    let app: Application = new TestApplication(canvas)
+    // let timer0: number = app.addTimer(timerCallback, 5, false, " data是timeCallback的数据 ");
+    // let timer1: number = app.addTimer(timerCallback, 5, true, " data是timeCallback的数据 ");
     app.update(0, 0)
     app.render()
 
@@ -23,11 +23,11 @@ function Test() {
     };
     stopBtn.onclick = () => {
       app.stop();
-      app.removeTimer(timer0);
-      app.removeTimer(timer1);
-      console.log(app.timers.length);
-      let id: number = app.addTimer(timerCallback, 10, true, " data是timeCallback的数据 ");
-      console.log(id === 0);
+      // app.removeTimer(timer0);
+      // app.removeTimer(timer1);
+      // console.log(app.timers.length);
+      // let id: number = app.addTimer(timerCallback, 10, true, " data是timeCallback的数据 ");
+      // console.log(id === 0);
     }
   }, []);
 
