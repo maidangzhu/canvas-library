@@ -1,5 +1,9 @@
 import {Canvas2DApplication} from "./application";
 
+type TextAlign = 'start' | 'left' | 'center' | 'right' | 'end';
+type TextBaseline = 'alphabetic' | 'hanging' | 'top' | 'middle' | 'bottom';
+type FontType = "10px sans-serif" | "15px sans-serif" | "20px sans-serif"
+  | "25px sans-serif";
 type PatternRepeat = "repeat" | "repeat-x" | "repeat-y" | "no-repeat";
 
 export class TestApplication extends Canvas2DApplication {
@@ -11,8 +15,9 @@ export class TestApplication extends Canvas2DApplication {
   public render() {
     if (this.context2D) {
       this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.testCanvas2DTextLayout()
       // this._drawRect(10, 10, this.canvas.width - 20, this.canvas.height - 20);
-      this.strokeGrid();
+      // this.strokeGrid();
     }
   }
 
@@ -161,7 +166,7 @@ export class TestApplication extends Canvas2DApplication {
       }
       this.context2D.restore();
       this.fillCircle(0, 0, 5, 'green');
-      this.strokeCoord(0, 0, this.canvas.width, this.canvas.height);
+      // this.strokeCoord(0, 0, this.canvas.width, this.canvas.height);
     }
   }
 
@@ -179,7 +184,7 @@ export class TestApplication extends Canvas2DApplication {
 
   public printLineStates() {
     if (this.context2D) {
-      console.log(" ＊＊＊＊＊＊＊＊＊LineState＊＊＊＊＊＊＊＊＊＊ ");
+      console.log(" *********LineState********** ");
       console.log(" lineWidth : " + this.context2D.lineWidth);
       console.log(" lineCap : " + this.context2D.lineCap);
       console.log(" lineJoin : " + this.context2D.lineJoin);
@@ -189,10 +194,85 @@ export class TestApplication extends Canvas2DApplication {
 
   public printTextStates() {
     if (this.context2D) {
-      console.log(" ＊＊＊＊＊＊＊＊＊TextState＊＊＊＊＊＊＊＊＊＊ ");
+      console.log(" *********TextState********** ");
       console.log(" font : " + this.context2D.font);
       console.log(" textAlign : " + this.context2D.textAlign);
       console.log(" textBaseline : " + this.context2D.textBaseline);
     }
+  }
+
+  public fillText(text: string, x: number, y: number, color: string = 'white', align: TextAlign = 'left', baseline: TextBaseline = 'top', font: FontType = '10px sans-serif'): void {
+    if (this.context2D) {
+      this.context2D.save();
+      this.context2D.textAlign = align;
+      this.context2D.textBaseline = baseline;
+      this.context2D.font = font;
+      this.context2D.fillStyle = color;
+      this.context2D.fillText(text, x, y);
+      this.context2D.restore();
+    }
+  }
+
+  public testCanvas2DTextLayout(): void {
+    let x: number = 20;
+    let y: number = 20;
+    let width: number = this.canvas.width - x * 2;
+    let height: number = this.canvas.height - y * 2;
+    let drawX: number = x;
+    let drawY: number = y;
+    let radius: number = 3;
+    // this.fillRectWithTitle(x, y, width, height);
+    this.context2D?.fillRect(x, y, width, height);
+    this.fillText("left - top", drawX, drawY, 'white', 'left', 'top',
+      '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 3．右上
+    drawX = x + width;
+    drawY = y;
+    this.fillText("right - top", drawX, drawY, 'white', 'right',
+      'top', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 4．右下
+    drawX = x + width;
+    drawY = y + height;
+    this.fillText("right - bottom", drawX, drawY, 'white', 'right',
+      'bottom', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 5．左下
+    drawX = x;
+    drawY = y + height;
+    this.fillText("left - bottom", drawX, drawY, 'white', 'left',
+      'bottom', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 6．中心
+    drawX = x + width * 0.5;
+    drawY = y + height * 0.5;
+    this.fillText("center - middle", drawX, drawY, 'black', 'center',
+      'middle', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'red');
+    // 7．中上
+    drawX = x + width * 0.5;
+    drawY = y;
+    this.fillText("center - top", drawX, drawY, 'blue', 'center',
+      'top', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 8．右中
+    drawX = x + width;
+    drawY = y + height * 0.5;
+    this.fillText("right - middle", drawX, drawY, 'blue', 'right',
+      'middle', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 9．中下
+    drawX = x + width * 0.5;
+    drawY = y + height;
+    this.fillText("center - bottom", drawX, drawY, 'blue', 'center',
+      'bottom', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
+    // 10．左中
+    drawX = x;
+    drawY = y + height * 0.5;
+    this.fillText("left - middle", drawX, drawY, 'blue', 'left',
+      'middle', '20px sans-serif');
+    this.fillCircle(drawX, drawY, radius, 'black');
   }
 }
