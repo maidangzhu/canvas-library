@@ -312,41 +312,49 @@ export class TestApplication extends Canvas2DApplication {
     this.fillText("left - top", drawX, drawY, 'white', 'left', 'top',
       '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x + width;
     drawY = y;
     this.fillText("right - top", drawX, drawY, 'white', 'right',
       'top', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x + width;
     drawY = y + height;
     this.fillText("right - bottom", drawX, drawY, 'white', 'right',
       'bottom', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x;
     drawY = y + height;
     this.fillText("left - bottom", drawX, drawY, 'white', 'left',
       'bottom', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x + width * 0.5;
     drawY = y + height * 0.5;
     this.fillText("center - middle", drawX, drawY, 'black', 'center',
       'middle', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'red');
+
     drawX = x + width * 0.5;
     drawY = y;
     this.fillText("center - top", drawX, drawY, 'blue', 'center',
       'top', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x + width;
     drawY = y + height * 0.5;
     this.fillText("right - middle", drawX, drawY, 'blue', 'right',
       'middle', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x + width * 0.5;
     drawY = y + height;
     this.fillText("center - bottom", drawX, drawY, 'blue', 'center',
       'bottom', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+
     drawX = x;
     drawY = y + height * 0.5;
     this.fillText("left - middle", drawX, drawY, 'blue', 'left',
