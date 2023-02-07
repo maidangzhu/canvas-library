@@ -13,6 +13,12 @@ export enum ETextLayout {
 	LEFT_MIDDLE
 }
 
+interface ImageData {
+	readonly data: Uint8ClampedArray;
+	readonly height: number;
+	readonly width: number;
+}
+
 type FontStyle = "normal" | "italic" | "oblique";
 type FontVariant = "normal" | "small-caps";
 type FontWeight =
@@ -479,8 +485,130 @@ export class TestApplication extends Canvas2DApplication {
 		return strs.join(" ");
 	}
 
-	public testMyTextLayout(font: string = this.makeFontString("18px",
-		"bold", "italic", "small-caps", 'sans-serif')) {
+	public drawImage(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
+		ImageBitmap, dstX: number, dstY: number) {
 
+	}
+
+	public drawImage(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
+		ImageBitmap, dstX: number, dstY: number, dstW: number, dstH: number) {
+
+	}
+
+	public drawImage(image: HTMLImageElement | HTMLCanvasElement | HTMLVideoElement |
+		ImageBitmap, srcX: number, srcY: number, srcW: number, srcH: number, dstX: number, dstY: number, dstW: number, dstH: number) {
+
+	}
+
+	public loadAndDrawImage(url: string): void {
+		let img: HTMLImageElement = document.createElement('img') as HTMLImageElement;
+		img.src = url;
+		img.onload = (ev: Event): void => {
+			if (this.context2D) {
+				console.log(url + " 尺寸为 [ " + img.width + " , " + img.height + " ] ");
+				this.context2D.drawImage(img, 10, 10);
+				// 将srcImage以拉伸缩放的方式绘制到Canvas画布指定的矩形中
+				this.context2D.drawImage(img, img.width + 30, 10, 200, img.height);
+				// 将srcImage的部分区域[ 44 , 6 , 162 , 175 , 200 ]以拉伸缩放的方式绘制到Canvas
+				// 画布指定的矩形[ 200 , img . height + 30 , 200 , 130 ]中
+				this.context2D.drawImage(img, 44, 6, 162, 175, 200, img.height
+					+ 30, 200, 130);
+			}
+		}
+	}
+
+	public drawImage(img: HTMLImageElement, destRect: Rectangle, srcRect:
+		Rectangle = Rectangle.create(0, 0, img.width, img.height), fillType:
+		                 EImageFillType = EImageFillType.STRETCH): boolean {
+		// 绘制image要满足一些条件
+		if (this.context2D === null) {
+			return false;
+		}
+		if (srcRect.isEmpty()) {
+			return false;
+		}
+		if (destRect.isEmpty()) {
+			return false;
+		}
+		// 分为stretch和repeat两种方式
+		if (fillType === EImageFillType.STRETCH) {
+			this.context2D.drawImage(img,
+				srcRect.origin.x,
+				srcRect.origin.y,
+				srcRect.size.width,
+				srcRect.size.height,
+				destRect.origin.x,
+				destRect.origin.y,
+				destRect.size.width,
+				destRect.size.height
+			);
+		} else {
+			this.fillRectangleWithColor(destRect, 'grey');
+			let rows: number = Math.ceil(destRect.size.width / srcRect.size.width);
+			let colums: number = Math.ceil(destRect.size.height / srcRect.size.height);
+			let left: number = 0;
+			let top: number = 0;
+			let right: number = 0;
+			let bottom: number = 0;
+			let width: number = 0;
+			let height: number = 0;
+			let destRight: number = destRect.origin.x + destRect.size.width;
+			let destBottom: number = destRect.origin.y + destRect.size.height;
+			if (fillType === EImageFillType.REPEAT_X) {
+				colums = 1;
+			} else if (fillType === EImageFillType.REPEAT_Y) {
+				rows = 1;
+			}
+			for (let i: number = 0; i < rows; i++) {
+				for (let j: number = 0; j < colums; j++) {
+					// 如何计算第i行第j列的坐标
+					left = destRect.origin.x + i * srcRect.size.width;
+					top = destRect.origin.y + j * srcRect.size.height;
+					width = srcRect.size.width;
+					height = srcRect.size.height;
+
+					right = left + width;
+					bottom = top + height;
+					if (right > destRight) {
+						width = srcRect.size.width - (right - destRight);
+					}
+					if (bottom > destBottom) {
+						height = srcRect.size.height - (bottom - destBottom);
+					}
+
+					this.context2D.drawImage(img,
+						srcRect.origin.x,
+						srcRect.origin.y,
+						width,
+						height,
+						left, top, width, height
+					);
+				}
+			}
+		}
+		return true;
+	}
+
+	public printShadowStates(): void {
+		if (this.context2D) {
+			console.log(" ＊＊＊＊＊＊＊＊＊ ShadowState ＊＊＊＊＊＊＊＊＊＊ ");
+			console.log(" shadowBlur : " + this.context2D.shadowBlur);
+			console.log(" shadowColor : " + this.context2D.shadowColor);
+			console.log(" shadowOffsetX : " + this.context2D.shadowOffsetX);
+			console.log(" shadowOffsetY : " + this.context2D.shadowOffsetY);
+		}
+	}
+
+	public setShadowState(
+		shadowBlur: number = 5,
+		shadowColor: string = "rgba( 127 , 127 , 127 , 0.5 )",
+		shadowOffsetX: number = 10,
+		shadowOffsetY: number = 10) {
+		if (this.context2D) {
+			this.context2D.shadowBlur = shadowBlur;
+			this.context2D.shadowColor = shadowColor;
+			this.context2D.shadowOffsetX = shadowOffsetX;
+			this.context2D.shadowOffsetY = shadowOffsetY;
+		}
 	}
 }
