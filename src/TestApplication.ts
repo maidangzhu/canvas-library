@@ -1,4 +1,17 @@
 import {Canvas2DApplication} from "./application";
+import {Size, Rectangle, vec2} from "./math2d";
+
+export enum ETextLayout {
+  LEFT_TOP,
+  RIGHT_TOP,
+  RIGHT_BOTTOM,
+  LEFT_BOTTOM,
+  CENTER_MIDDLE,
+  CENTER_TOP,
+  RIGHT_MIDDLE,
+  CENTER_BOTTOM,
+  LEFT_MIDDLE
+}
 
 type TextAlign = 'start' | 'left' | 'center' | 'right' | 'end';
 type TextBaseline = 'alphabetic' | 'hanging' | 'top' | 'middle' | 'bottom';
@@ -221,8 +234,7 @@ export class TestApplication extends Canvas2DApplication {
     let drawX: number = x;
     let drawY: number = y;
     let radius: number = 3;
-    // this.fillRectWithTitle(x, y, width, height);
-    this.context2D?.fillRect(x, y, width, height);
+    this.fillRectWithTitle(x, y, width, height);
     this.fillText("left - top", drawX, drawY, 'white', 'left', 'top',
       '20px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
@@ -274,5 +286,105 @@ export class TestApplication extends Canvas2DApplication {
     this.fillText("left - middle", drawX, drawY, 'blue', 'left',
       'middle', '20px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
+  }
+
+  public calcTextSize(text: string, char: string = 'W', scale: number = 0.5): Size {
+    if (this.context2D) {
+      let size: Size = new Size();
+      size.width = this.context2D.measureText(text).width;
+      let w: number = this.context2D.measureText(char).width;
+      size.height = w + w * scale; // 宽度上加scale比例
+      return size;
+    }
+
+    throw new Error(" context2D渲染上下文为null ");
+  }
+
+  public calcLocalTextRectangle(layout: ETextLayout, text: string, parentWidth: number, parentHeight: number): Rectangle {
+    let s: Size = this.calcTextSize(text);
+    let o: vec2 = vec2.create();
+    let left: number = 0;
+    let top: number = 0;
+    let right: number = parentWidth - s.width;
+    let bottom: number = parentHeight - s.height;
+    let center: number = right * 0.5;
+    let middle: number = bottom * 0.5;
+
+    switch (layout) {
+      case ETextLayout.LEFT_TOP :
+        o.x = left;
+        o.y = top;
+        break;
+      case ETextLayout.RIGHT_TOP :
+        o.x = right;
+        o.y = top;
+        break;
+      case ETextLayout.RIGHT_BOTTOM :
+        o.x = right;
+        o.y = bottom;
+        break;
+      case ETextLayout.LEFT_BOTTOM :
+        o.x = left;
+        o.y = bottom;
+        break;
+      case ETextLayout.CENTER_MIDDLE:
+        o.x = center;
+        o.y = middle;
+        break;
+      case ETextLayout.CENTER_TOP :
+        o.x = center;
+        o.y = 0;
+        break;
+      case ETextLayout.RIGHT_MIDDLE :
+        o.x = right;
+        o.y = middle;
+        break;
+      case ETextLayout.CENTER_BOTTOM:
+        o.x = center;
+        o.y = bottom;
+        break;
+      case ETextLayout.LEFT_MIDDLE :
+        o.x = left;
+        o.y = middle;
+        break;
+    }
+    // 返回子矩形
+    return new Rectangle(o, s);
+  }
+
+  public fillRectWithTitle(x: number, y: number, width: number, height:
+    number, title: string = '', layout: ETextLayout = ETextLayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = true):
+    void {
+    if (this.context2D) {
+
+      this.context2D.save();
+      // 1. 绘制矩形
+      this.context2D.fillStyle = color;
+      this.context2D.beginPath();
+      this.context2D.rect(x, y, width, height);
+      this.context2D.fill();
+      // 如果有文字的话，先根据枚举值计算x、y坐标
+      if (title.length ! == 0) {
+        // 2. 绘制文字信息
+        // 在矩形的左上角绘制出相关文字信息，使用的是10px大小的文字
+        // 调用calcLocalTextRectangle方法
+        let rect: Rectangle = this.calcLocalTextRectangle(layout,
+          title, width, height);
+        // 绘制文本
+        this.fillText(title, x + rect.origin.x, y + rect.origin.y, 'white', 'left', 'top', '10px sans-serif');
+        // 绘制文本框
+        this.strokeRect(x + rect.origin.x, y + rect.origin.y, rect.size.width, rect.size.height, 'rgba( 0 , 0 ,0 , 0.5)');
+        // 绘制文本框左上角坐标（相对父矩形表示）
+        this.fillCircle(x + rect.origin.x, y + rect.origin.y, 2);
+      }
+      // 3. 绘制变换的局部坐标系
+      // 附加一个坐标，x轴和y轴比矩形的width和height多20个像素
+      // 并且绘制3个像素的原点
+      if (showCoord) {
+        this.strokeCoord(x, y, width + 20, height + 20);
+        this.fillCircle(x, y, 3);
+      }
+      this.context2D.restore();
+    }
   }
 }
