@@ -13,6 +13,41 @@ export enum ETextLayout {
   LEFT_MIDDLE
 }
 
+type FontStyle = "normal" | "italic" | "oblique";
+type FontVariant = "normal" | "small-caps";
+type FontWeight =
+  "normal"
+  | "bold"
+  | "bolder"
+  | "lighter"
+  | "100"
+  | "200"
+  | "300"
+  | "400"
+  | "500"
+  | "600"
+  | "700"
+  | "800"
+  | "900";
+type FontSize =
+  "10px"
+  | "12px"
+  | "16px"
+  | "18px"
+  | "24px"
+  | "50%"
+  | "75%"
+  | "100%"
+  | "125%"
+  | "150%"
+  | "xx-small"
+  | "x-small"
+  | "small"
+  | "medium"
+  | "large"
+  | "x-large"
+  | "xx-large";
+type FontFamily = "sans-serif" | "serif" | "courier" | "fantasy" | "monospace";
 type TextAlign = 'start' | 'left' | 'center' | 'right' | 'end';
 type TextBaseline = 'alphabetic' | 'hanging' | 'top' | 'middle' | 'bottom';
 type FontType = "10px sans-serif" | "15px sans-serif" | "20px sans-serif"
@@ -353,10 +388,8 @@ export class TestApplication extends Canvas2DApplication {
   }
 
   public fillRectWithTitle(x: number, y: number, width: number, height:
-    number, title: string = '', layout: ETextLayout = ETextLayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = true):
-    void {
+    number, title: string = '', layout: ETextLayout = ETextLayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = true) {
     if (this.context2D) {
-
       this.context2D.save();
       // 1. 绘制矩形
       this.context2D.fillStyle = color;
