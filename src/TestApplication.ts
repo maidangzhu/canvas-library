@@ -1,5 +1,5 @@
 import {Canvas2DApplication} from "./application";
-import {Size, Rectangle, vec2} from "./math2d";
+import {Rectangle, Size, vec2} from "./math2d";
 
 export enum ETextLayout {
   LEFT_TOP,
@@ -197,6 +197,45 @@ export class TestApplication extends Canvas2DApplication {
       this.strokeLine(orginX, orginY, orginX + width, orginY);
       this.context2D.strokeStyle = 'blue';
       this.strokeLine(orginX, orginY, orginX, orginY + height);
+      this.context2D.restore();
+    }
+  }
+
+  public strokeLocalCoord(width: number, height: number, lineWidth: number = 1): void {
+    if (this.context2D !== null) {
+      this.context2D.save();
+      this.context2D.lineWidth = lineWidth;
+      this.context2D.strokeStyle = 'red';
+      this.strokeLine(0, 0, width, 0);
+      this.context2D.strokeStyle = 'blue';
+      this.strokeLine(0, 0, 0, height);
+      this.context2D.restore();
+    }
+  }
+
+  public strokeCircle(x: number, y: number, radius: number, color: string = 'red', lineWidth: number = 1): void {
+    if (this.context2D !== null) {
+      this.context2D.save();
+      this.context2D.strokeStyle = color;
+      this.context2D.lineWidth = lineWidth;
+      this.context2D.beginPath();
+      this.context2D.arc(x, y, radius, 0, Math.PI * 2);
+      this.context2D.stroke();
+      this.context2D.restore();
+    }
+  }
+
+  public strokeRect(x: number, y: number, w: number, h: number, color: string = 'black'): void {
+    if (this.context2D !== null) {
+      this.context2D.save();
+      this.context2D.strokeStyle = color;
+      this.context2D.beginPath();
+      this.context2D.moveTo(x, y);
+      this.context2D.lineTo(x + w, y);
+      this.context2D.lineTo(x + w, y + h);
+      this.context2D.lineTo(x, y + h);
+      this.context2D.closePath();
+      this.context2D.stroke();
       this.context2D.restore();
     }
   }
@@ -419,5 +458,29 @@ export class TestApplication extends Canvas2DApplication {
       }
       this.context2D.restore();
     }
+  }
+
+
+  public makeFontString(
+    size: FontSize = '10px',
+    weight: FontWeight = 'normal',
+    style: FontStyle = 'normal',
+    variant: FontVariant = 'normal',
+    family: FontFamily = 'sans-serif',
+  ): string {
+    let strs: string [ ] = [];
+    // don't change order
+    strs.push(style);
+    strs.push(variant);
+    strs.push(weight);
+    strs.push(size);
+    strs.push(family);
+
+    return strs.join(" ");
+  }
+
+  public testMyTextLayout(font: string = this.makeFontString("18px",
+    "bold", "italic", "small-caps", 'sans-serif')) {
+
   }
 }
