@@ -310,55 +310,47 @@ export class TestApplication extends Canvas2DApplication {
     let radius: number = 3;
     this.fillRectWithTitle(x, y, width, height);
     this.fillText("left - top", drawX, drawY, 'white', 'left', 'top',
-      '20px sans-serif');
+      '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 3．右上
     drawX = x + width;
     drawY = y;
     this.fillText("right - top", drawX, drawY, 'white', 'right',
-      'top', '20px sans-serif');
+      'top', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 4．右下
     drawX = x + width;
     drawY = y + height;
     this.fillText("right - bottom", drawX, drawY, 'white', 'right',
-      'bottom', '20px sans-serif');
+      'bottom', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 5．左下
     drawX = x;
     drawY = y + height;
     this.fillText("left - bottom", drawX, drawY, 'white', 'left',
-      'bottom', '20px sans-serif');
+      'bottom', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 6．中心
     drawX = x + width * 0.5;
     drawY = y + height * 0.5;
     this.fillText("center - middle", drawX, drawY, 'black', 'center',
-      'middle', '20px sans-serif');
+      'middle', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'red');
-    // 7．中上
     drawX = x + width * 0.5;
     drawY = y;
     this.fillText("center - top", drawX, drawY, 'blue', 'center',
-      'top', '20px sans-serif');
+      'top', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 8．右中
     drawX = x + width;
     drawY = y + height * 0.5;
     this.fillText("right - middle", drawX, drawY, 'blue', 'right',
-      'middle', '20px sans-serif');
+      'middle', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 9．中下
     drawX = x + width * 0.5;
     drawY = y + height;
     this.fillText("center - bottom", drawX, drawY, 'blue', 'center',
-      'bottom', '20px sans-serif');
+      'bottom', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
-    // 10．左中
     drawX = x;
     drawY = y + height * 0.5;
     this.fillText("left - middle", drawX, drawY, 'blue', 'left',
-      'middle', '20px sans-serif');
+      'middle', '10px sans-serif');
     this.fillCircle(drawX, drawY, radius, 'black');
   }
 
