@@ -611,4 +611,31 @@ export class TestApplication extends Canvas2DApplication {
 			this.context2D.shadowOffsetY = shadowOffsetY;
 		}
 	}
+
+	public drawCanvasCoordCenter(): void {
+		if (!this.context2D) return;
+
+		let halfWidth: number = this.canvas.width * 0.5;
+		let halfHeight: number = this.canvas.height * 0.5;
+		this.context2D.save();
+		this.context2D.lineWidth = 2;
+		this.context2D.strokeStyle = 'rgba( 255 , 0 , 0 , 0.5 ) ';
+		this.strokeLine(0, halfHeight, this.canvas.width, halfHeight);
+		this.context2D.strokeStyle = 'rgba( 0 , 0 , 255 , 0.5 )';
+		this.strokeLine(halfWidth, 0, halfWidth, this.canvas.height);
+		this.context2D.restore();
+		this.fillCircle(halfWidth, halfHeight, 5, 'rgba(0 , 0 , 0 , 0.5 ) ');
+	}
+
+	public drawCoordInfo(info: string, x: number, y: number): void {
+		this.fillText(info, x, y, 'black', 'center', 'bottom');
+	}
+
+	// 两点间距离公式
+	public distance(x0: number, y0: number, x1: number, y1: number):
+		number {
+		let diffX: number = x1 - x0;
+		let diffY: number = y1 - y0;
+		return Math.sqrt(diffX * diffX + diffY * diffY);
+	}
 }
