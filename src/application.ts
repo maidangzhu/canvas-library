@@ -1,4 +1,4 @@
-import { vec2 } from "./math2d" ;
+import { vec2 } from "./math2d";
 
 export type TimerCallback = (id: number, data: any) => void;
 
@@ -188,9 +188,7 @@ export class Application implements EventListenerObject {
 				let x: number = evt.clientX - rect.left - borderLeftWidth - paddingLeft;
 				let y: number = evt.clientY - rect.top - borderTopWidth - paddingTop;
 
-				let pos: vec2 = vec2.create(x, y);
-
-				return pos;
+				return vec2.create(x, y);
 			}
 
 			throw new Error("canvas为null");

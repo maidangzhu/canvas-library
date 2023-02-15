@@ -1,4 +1,4 @@
-import { Canvas2DApplication } from "./application";
+import { Canvas2DApplication, CanvasMouseEvent } from "./application";
 import { Rectangle, Size, vec2 } from "./math2d";
 
 export enum ETextLayout {
@@ -65,13 +65,21 @@ export class TestApplication extends Canvas2DApplication {
 	private _linearGradient!: CanvasGradient;
 	private _radialGradient!: CanvasGradient;
 	private _pattern: CanvasPattern | null = null;
+	private _mouseX: number = 0;
+	private _mouseY: number = 0;
 
-	public render() {
+	public render(): void {
 		if (this.context2D) {
+			console.log('this.x', this._mouseX);
+			console.log('this.y', this._mouseY);
 			this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			this.testCanvas2DTextLayout()
-			// this._drawRect(10, 10, this.canvas.width - 20, this.canvas.height - 20);
-			// this.strokeGrid();
+			this.strokeGrid();
+			this.drawCanvasCoordCenter();
+			this.drawCoordInfo(
+				'[' + this._mouseX + ', ' + this._mouseY + "]",
+				this._mouseX,
+				this._mouseY
+			);
 		}
 	}
 
@@ -627,6 +635,7 @@ export class TestApplication extends Canvas2DApplication {
 		this.fillCircle(halfWidth, halfHeight, 5, 'rgba(0 , 0 , 0 , 0.5 ) ');
 	}
 
+	// 将坐标信息以文字的方式绘制在画布中
 	public drawCoordInfo(info: string, x: number, y: number): void {
 		this.fillText(info, x, y, 'black', 'center', 'bottom');
 	}
@@ -637,5 +646,10 @@ export class TestApplication extends Canvas2DApplication {
 		let diffX: number = x1 - x0;
 		let diffY: number = y1 - y0;
 		return Math.sqrt(diffX * diffX + diffY * diffY);
+	}
+
+	protected dispatchMouseMove(evt: CanvasMouseEvent): void {
+		this._mouseX = evt.canvasPosition.x;
+		this._mouseY = evt.canvasPosition.y;
 	}
 }
