@@ -68,10 +68,13 @@ export class TestApplication extends Canvas2DApplication {
 	private _mouseX: number = 0;
 	private _mouseY: number = 0;
 
+	constructor(canvas: HTMLCanvasElement) {
+		super(canvas);
+		this.isSupportMouseMove = true;
+	}
+
 	public render(): void {
 		if (this.context2D) {
-			console.log('this.x', this._mouseX);
-			console.log('this.y', this._mouseY);
 			this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			this.strokeGrid();
 			this.drawCanvasCoordCenter();
