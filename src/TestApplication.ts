@@ -78,6 +78,7 @@ export class TestApplication extends Canvas2DApplication {
 			this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			this.strokeGrid();
 			this.drawCanvasCoordCenter();
+			console.log('this.mousex', this._mouseX, 'this.mousey', this._mouseY);
 			this.drawCoordInfo(
 				'[' + this._mouseX + ', ' + this._mouseY + "]",
 				this._mouseX,
@@ -453,7 +454,7 @@ export class TestApplication extends Canvas2DApplication {
 			this.context2D.rect(x, y, width, height);
 			this.context2D.fill();
 			// 如果有文字的话，先根据枚举值计算x、y坐标
-			if (title.length ! == 0) {
+			if (title.length) {
 				// 2. 绘制文字信息
 				// 在矩形的左上角绘制出相关文字信息，使用的是10px大小的文字
 				// 调用calcLocalTextRectangle方法
@@ -654,5 +655,18 @@ export class TestApplication extends Canvas2DApplication {
 	protected dispatchMouseMove(evt: CanvasMouseEvent): void {
 		this._mouseX = evt.canvasPosition.x;
 		this._mouseY = evt.canvasPosition.y;
+	}
+
+	public doTransform() {
+		if (this.context2D) {
+			let width = 100;
+			let height = 60;
+			let x = this.context2D.canvas.width / 2;
+			let y = this.context2D.canvas.height / 2;
+			this.context2D.save();
+			this.context2D.translate(x, y);
+			this.fillRectWithTitle(0, 0, width, height, '0度旋转');
+			this.context2D.restore();
+		}
 	}
 }

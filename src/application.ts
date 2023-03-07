@@ -100,6 +100,7 @@ export class Application implements EventListenerObject {
 	protected dispatchKeyUp(evt: CanvasKeyboardEvent): any {
 	}
 
+	// the step method won't run unless you invoke start method
 	public start() {
 		if (!this._start) {
 			this._start = true;
