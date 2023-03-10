@@ -1,7 +1,7 @@
 import { Canvas2DApplication, CanvasMouseEvent } from "./application";
-import { Rectangle, Size, vec2 } from "./math2d";
+import { Math2D, Rectangle, Size, vec2 } from "./math2d";
 
-export enum ETextLayout {
+export enum ELayout {
 	LEFT_TOP,
 	RIGHT_TOP,
 	RIGHT_BOTTOM,
@@ -78,12 +78,13 @@ export class TestApplication extends Canvas2DApplication {
 			this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			this.strokeGrid();
 			this.drawCanvasCoordCenter();
-			console.log('this.mousex', this._mouseX, 'this.mousey', this._mouseY);
-			this.drawCoordInfo(
-				'[' + this._mouseX + ', ' + this._mouseY + "]",
-				this._mouseX,
-				this._mouseY
-			);
+			this.doTransform(20);
+			// console.log('this.mousex', this._mouseX, 'this.mousey', this._mouseY);
+			// this.drawCoordInfo(
+			// 	'[' + this._mouseX + ', ' + this._mouseY + "]",
+			// 	this._mouseX,
+			// 	this._mouseY
+			// );
 		}
 	}
 
@@ -392,7 +393,7 @@ export class TestApplication extends Canvas2DApplication {
 		throw new Error(" context2D渲染上下文为null ");
 	}
 
-	public calcLocalTextRectangle(layout: ETextLayout, text: string, parentWidth: number, parentHeight: number): Rectangle {
+	public calcLocalTextRectangle(layout: ELayout, text: string, parentWidth: number, parentHeight: number): Rectangle {
 		let s: Size = this.calcTextSize(text);
 		let o: vec2 = vec2.create();
 		let left: number = 0;
@@ -403,39 +404,39 @@ export class TestApplication extends Canvas2DApplication {
 		let middle: number = bottom * 0.5;
 
 		switch (layout) {
-			case ETextLayout.LEFT_TOP :
+			case ELayout.LEFT_TOP :
 				o.x = left;
 				o.y = top;
 				break;
-			case ETextLayout.RIGHT_TOP :
+			case ELayout.RIGHT_TOP :
 				o.x = right;
 				o.y = top;
 				break;
-			case ETextLayout.RIGHT_BOTTOM :
+			case ELayout.RIGHT_BOTTOM :
 				o.x = right;
 				o.y = bottom;
 				break;
-			case ETextLayout.LEFT_BOTTOM :
+			case ELayout.LEFT_BOTTOM :
 				o.x = left;
 				o.y = bottom;
 				break;
-			case ETextLayout.CENTER_MIDDLE:
+			case ELayout.CENTER_MIDDLE:
 				o.x = center;
 				o.y = middle;
 				break;
-			case ETextLayout.CENTER_TOP :
+			case ELayout.CENTER_TOP :
 				o.x = center;
 				o.y = 0;
 				break;
-			case ETextLayout.RIGHT_MIDDLE :
+			case ELayout.RIGHT_MIDDLE :
 				o.x = right;
 				o.y = middle;
 				break;
-			case ETextLayout.CENTER_BOTTOM:
+			case ELayout.CENTER_BOTTOM:
 				o.x = center;
 				o.y = bottom;
 				break;
-			case ETextLayout.LEFT_MIDDLE :
+			case ELayout.LEFT_MIDDLE :
 				o.x = left;
 				o.y = middle;
 				break;
@@ -445,7 +446,7 @@ export class TestApplication extends Canvas2DApplication {
 	}
 
 	public fillRectWithTitle(x: number, y: number, width: number, height:
-		number, title: string = '', layout: ETextLayout = ETextLayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = true) {
+		number, title: string = '', layout: ELayout = ELayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = true) {
 		if (this.context2D) {
 			this.context2D.save();
 			// 1. 绘制矩形
@@ -657,15 +658,40 @@ export class TestApplication extends Canvas2DApplication {
 		this._mouseY = evt.canvasPosition.y;
 	}
 
-	public doTransform() {
+	// rotateFirst会更改绘制物体的旋转中心
+	public doTransform(degree: number, rotateFirst: boolean = true): void {
 		if (this.context2D) {
-			let width = 100;
-			let height = 60;
-			let x = this.context2D.canvas.width / 2;
-			let y = this.context2D.canvas.height / 2;
+			// 调用前面实现的两点间距离公式
+			// 第一个点是原点，第二个点是画布中心点
+			let radius: number = this.distance(0, 0, this.canvas.width * 0.5, this.canvas.height * 0.5);
+			// 然后绘制一个圆
+			this.strokeCircle(0, 0, radius, 'black');
+
+			let radians: number = Math2D.toRadian(degree);
+
+			// 顺时针
 			this.context2D.save();
-			this.context2D.translate(x, y);
-			this.fillRectWithTitle(0, 0, width, height, '0度旋转');
+			if (rotateFirst) {
+				this.context2D.rotate(radians);
+				this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5)
+			} else {
+				this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5)
+				this.context2D.rotate(radians);
+			}
+			this.fillRectWithTitle(0, 0, 100, 60, '+' + degree +
+				'度旋转');
+			this.context2D.restore();
+
+			// 逆时针
+			this.context2D.save();
+			if (rotateFirst) {
+				this.context2D.rotate(-radians);
+				this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5)
+			} else {
+				this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5)
+				this.context2D.rotate(-radians);
+			}
+			this.fillRectWithTitle(0, 0, 100, 60, '-' + degree + '度旋转');
 			this.context2D.restore();
 		}
 	}
