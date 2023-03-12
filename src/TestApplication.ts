@@ -78,7 +78,8 @@ export class TestApplication extends Canvas2DApplication {
 			this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			this.strokeGrid();
 			this.drawCanvasCoordCenter();
-			this.doTransform(20);
+			// this.doTransform(10, true);
+			this.testFillLocalRectWithTitle();
 			// console.log('this.mousex', this._mouseX, 'this.mousey', this._mouseY);
 			// this.drawCoordInfo(
 			// 	'[' + this._mouseX + ', ' + this._mouseY + "]",
@@ -779,6 +780,40 @@ export class TestApplication extends Canvas2DApplication {
 				this.fillCircle(0, 0, 3);
 			}
 			this.context2D.restore();
+		}
+	}
+
+
+	// 将doTransform中先旋转后平移的代码独立出来，形成rotateTranslate方法
+	public rotateTranslate(degree: number, layout: ELayout = ELayout.LEFT_TOP, width: number = 40, height: number = 20): void {
+		if (!this.context2D) return;
+		let radians: number = Math2D.toRadian(degree);
+		this.context2D.save();
+		this.context2D.rotate(radians);
+		this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5);
+		this.fillLocalRectWithTitle(width, height, '', layout);
+		this.context2D.restore();
+	}
+
+	// 实现testFillLocalRectWitTitle方法，该方法分别在圆的路径上绘制9种不同的坐标系
+	public testFillLocalRectWithTitle(): void {
+		if (this.context2D) {
+			// 旋转0°，坐标原点位于左上角（默认）
+			this.rotateTranslate(0, ELayout.LEFT_TOP);
+			// 顺时针旋转，使用4种不同的ELayout值
+			this.rotateTranslate(10, ELayout.LEFT_MIDDLE);
+			this.rotateTranslate(20, ELayout.LEFT_BOTTOM);
+			this.rotateTranslate(30, ELayout.CENTER_TOP);
+			this.rotateTranslate(40, ELayout.CENTER_MIDDLE);
+			// 逆时针旋转，使用4种不同的ELayout值
+			this.rotateTranslate(-10, ELayout.CENTER_BOTTOM);
+			this.rotateTranslate(-20, ELayout.RIGHT_TOP);
+			this.rotateTranslate(-30, ELayout.RIGHT_MIDDLE);
+			this.rotateTranslate(-40, ELayout.RIGHT_BOTTOM);
+			// 计算半径
+			let radius: number = this.distance(0, 0, this.canvas.width * 0.5, this.canvas.height * 0.5);
+			// 最后绘制一个圆
+			this.strokeCircle(0, 0, radius, 'black');
 		}
 	}
 }
