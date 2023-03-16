@@ -75,17 +75,12 @@ export class TestApplication extends Canvas2DApplication {
 
 	public render(): void {
 		if (this.context2D) {
+			console.log('this.canvas.height', this.canvas.height);
 			this.context2D.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			this.strokeGrid();
 			this.drawCanvasCoordCenter();
-			// this.doTransform(10, true);
-			this.testFillLocalRectWithTitle();
-			// console.log('this.mousex', this._mouseX, 'this.mousey', this._mouseY);
-			// this.drawCoordInfo(
-			// 	'[' + this._mouseX + ', ' + this._mouseY + "]",
-			// 	this._mouseX,
-			// 	this._mouseY
-			// );
+			// this.testFillLocalRectWithTitle();
+			this.doLocalTransform();
 		}
 	}
 
@@ -447,7 +442,7 @@ export class TestApplication extends Canvas2DApplication {
 	}
 
 	public fillRectWithTitle(x: number, y: number, width: number, height:
-		number, title: string = '', layout: ELayout = ELayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = true) {
+		number, title: string = '', layout: ELayout = ELayout.CENTER_MIDDLE, color: string = 'grey', showCoord: boolean = false) {
 		if (this.context2D) {
 			this.context2D.save();
 			// 1. 绘制矩形
@@ -474,7 +469,7 @@ export class TestApplication extends Canvas2DApplication {
 			// 并且绘制3个像素的原点
 			if (showCoord) {
 				this.strokeCoord(x, y, width + 20, height + 20);
-				this.fillCircle(x, y, 3);
+				this.fillCircle(x, y, 2);
 			}
 			this.context2D.restore();
 		}
@@ -701,7 +696,7 @@ export class TestApplication extends Canvas2DApplication {
 		width: number,   //要绘制的矩形宽度
 		height: number,                             //要绘制的矩形高度
 		title: string = '',                        //矩形中显示的字符串
-		referencePt: ELayout = ELayout.CENTER_MIDDLE,
+		referencePt: ELayout = ELayout.LEFT_TOP,
 		//坐标系原点位置，默认居中
 		layout: ELayout = ELayout.CENTER_MIDDLE,
 		//文字框位置，默认居中绘制文本
@@ -789,7 +784,9 @@ export class TestApplication extends Canvas2DApplication {
 		if (!this.context2D) return;
 		let radians: number = Math2D.toRadian(degree);
 		this.context2D.save();
+		// rotate first
 		this.context2D.rotate(radians);
+		// then translate
 		this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5);
 		this.fillLocalRectWithTitle(width, height, '', layout);
 		this.context2D.restore();
@@ -815,5 +812,73 @@ export class TestApplication extends Canvas2DApplication {
 			// 最后绘制一个圆
 			this.strokeCircle(0, 0, radius, 'black');
 		}
+	}
+
+	public doLocalTransform(): void {
+		if (!this.context2D) return;
+		let width: number = 100;            // 在局部坐标系中显示的rect的width
+		let height: number = 60;            // 在局部坐标系中显示的rect的height
+		let coordWidth: number = width * 1.2;          // 局部坐标系x轴的长度
+		let coordHeight: number = height * 1.2;       // 局部坐标系y轴的长度
+		let radius: number = 5;             // 绘制原点时使用的半径
+		this.context2D.save();
+
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+		this.fillCircle(0, 0, radius);
+		this.fillLocalRectWithTitle(width, height, ' 1、 初始状态 ');
+
+
+		// 将坐标系向右移动到画布的中心，向下移动10个单位，再绘制局部坐标系
+		this.context2D.translate(this.canvas.width * 0.5, 10);
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+		this.fillCircle(0, 0, radius);
+
+
+		this.fillLocalRectWithTitle(width, height, ' 2、平移 '); //绘制矩形
+
+		this.context2D.translate(0, this.canvas.height * 0.5 - 10);
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+		this.fillCircle(0, 0, radius);
+		this.fillLocalRectWithTitle(width, height, ' 3、平移到画布中心 ');
+
+
+		// 将坐标系继续旋转-120°
+		this.context2D.rotate(Math2D.toRadian(-120));
+		// 绘制旋转-120°的矩形
+		this.fillLocalRectWithTitle(width, height, ' 4、旋转-120度 ');
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+		this.fillCircle(0, 0, radius);
+		// 将坐标系在-120°旋转的基础上再旋转-130°，合计旋转了-250°
+		this.context2D.rotate(Math2D.toRadian(-130));
+		this.fillLocalRectWithTitle(width, height, ' 5、旋转-130度 ');
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+		this.fillCircle(0, 0, radius);
+
+
+		// 沿着局部坐标的x轴和y轴正方向各自平移100个单位
+		this.context2D.translate(100, 100);
+		this.fillLocalRectWithTitle(width, height, ' 6、局部平移100个单位 ');
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+
+
+		// 局部坐标系的x轴放大1.5倍 , y轴放大2倍
+		this.context2D.scale(1.5, 2.0);
+		this.fillLocalRectWithTitle(width, height, ' 7、x轴局部放大1.5倍，y轴局部放大2倍 ');              // 同时物体的宽度也会放大1.5倍，高度放大2倍
+		this.strokeCoord(0, 0, coordWidth, coordHeight);
+		this.fillCircle(0, 0, radius);
+
+		// this.fillLocalRectWithTitle(width * 1.5, height * 2.0, ' 8、 放大物体尺寸 ');                              // 这里是放大物体本身的尺寸，而不是放大局部坐标系的尺寸，一定要注意！! ！
+		// this.strokeCoord(0, 0, coordWidth, coordHeight);
+		// this.fillCircle(0, 0, radius);
+
+
+		// this.context2D.scale(1.5, 2.0);
+		// // 局部坐标系的x轴放大1.5倍，y轴放大2倍
+		// this.fillLocalRectWithTitle(width, height, '7、缩放局部坐标系 ', ELayout.LEFT_MIDDLE);                          // 使用LEFT_MIDDEL来绘制矩形
+		// this.strokeCoord(0, 0, coordWidth, coordHeight);
+		// this.fillCircle(0, 0, radius);
+
+
+		this.context2D.restore();
 	}
 }

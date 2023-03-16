@@ -36,7 +36,7 @@ function Test() {
 			<button id="start">start</button>
 			<button id="stop">stop</button>
 			<br/>
-			<canvas id="canvas"/>
+			<canvas id="canvas" width={500} height={500}/>
 		</div>
 	)
 }
