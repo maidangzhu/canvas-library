@@ -1,6 +1,20 @@
 import { Canvas2DApplication, CanvasMouseEvent } from "./application";
 import { Math2D, Rectangle, Size, vec2 } from "./math2d";
 
+
+function loggedMethod(originalMethod: any, context: ClassMethodDecoratorContext) {
+	const methodName = String(context.name);
+
+	function replacementMethod(this: any, ...args: any[]) {
+		console.log(`LOG: Entering method '${methodName}'.`)
+		const result = originalMethod.call(this, ...args);
+		console.log(`LOG: Exiting method '${methodName}'.`)
+		return result;
+	}
+
+	return replacementMethod;
+}
+
 export enum ELayout {
 	LEFT_TOP,
 	RIGHT_TOP,
@@ -693,16 +707,15 @@ export class TestApplication extends Canvas2DApplication {
 	}
 
 	public fillLocalRectWithTitle(
-		width: number,   //要绘制的矩形宽度
-		height: number,                             //要绘制的矩形高度
-		title: string = '',                        //矩形中显示的字符串
+		width: number,
+		height: number,
+		title: string = '',
 		referencePt: ELayout = ELayout.LEFT_TOP,
 		//坐标系原点位置，默认居中
 		layout: ELayout = ELayout.CENTER_MIDDLE,
 		//文字框位置，默认居中绘制文本
-		color: string = 'grey',                   //要绘制矩形的填充颜色
+		color: string = 'grey',
 		showCoord: boolean = true
-		//是否显示局部坐标系，默认为显示局部坐标系
 	): void {
 		if (this.context2D) {
 			let x: number = 0;
@@ -881,4 +894,58 @@ export class TestApplication extends Canvas2DApplication {
 
 		this.context2D.restore();
 	}
+
+	@loggedMethod
+	public fillLocalRectWithTitleUV(
+		width: number,
+		height: number,
+		title: string = '',
+		u: number = 0, v: number = 0,
+		//这里使用u和v参数代替原来的ELayout枚举
+		layout: ELayout = ELayout.CENTER_MIDDLE,
+		color: string = 'grey',
+		showCoord: boolean = true
+	): void {
+		if (this.context2D) {
+			let x: number = -width * u;
+			let y: number = -height * v;
+
+			this.context2D.save();
+
+			this.context2D.fillStyle = color;
+			this.context2D.beginPath();
+			this.context2D.rect(x, y, width, height);
+			this.context2D.fill();
+
+			if (title.length !== 0) {
+				let rect: Rectangle = this.calcLocalTextRectangle(layout,
+					title, width, height);
+				this.fillText(title, x + rect.origin.x, y + rect.origin.y, 'white', 'left', 'top' /*, '10px sans-serif'*/);
+				this.strokeRect(x + rect.origin.x, y + rect.origin.y, rect.size.width, rect.size.height, 'rgba( 0 , 0 ,0 , 0.5)');
+				this.fillCircle(x + rect.origin.x, y + rect.origin.y, 2);
+			}
+			if (showCoord) {
+				this.strokeCoord(0, 0, width + 20, height + 20);
+				this.fillCircle(0, 0, 3);
+			}
+
+			this.context2D.restore();
+		}
+	}
+
+	// 这个方法名称按照变换顺序取名
+	// 其形成一个圆的路径，而且绘制物体的朝向和圆路径一致
+	public translateRotateTranslateDrawRect(degree: number, u: number = 0, v: number = 0, radius = 200, width: number = 40, height: number = 20): void {
+		if (!this.context2D) return;
+
+		let radians: number = Math2D.toRadian(degree);
+		this.context2D.save();
+		this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5);
+		this.context2D.rotate(radians);
+		// 然后再将位于画布中心旋转后的局部坐标系沿着局部x轴的方向平移250个单位，
+		this.context2D.translate(radius, 0);
+		this.fillLocalRectWithTitleUV(width, height, '', u, v);
+		this.context2D.restore();
+	}
 }
+
