@@ -942,10 +942,56 @@ export class TestApplication extends Canvas2DApplication {
 		this.context2D.save();
 		this.context2D.translate(this.canvas.width * 0.5, this.canvas.height * 0.5);
 		this.context2D.rotate(radians);
-		// 然后再将位于画布中心旋转后的局部坐标系沿着局部x轴的方向平移250个单位，
-		this.context2D.translate(radius, 0);
+		this.context2D.translate(radius, 0); // 平移一弧度（相当于圆的半径的长度）的距离
 		this.fillLocalRectWithTitleUV(width, height, '', u, v);
 		this.context2D.restore();
 	}
-}
 
+	public testFillLocalRectWithTitleUV(): void {
+		if (!this.context2D) return;
+
+		let radius: number = 200;                    // 圆路径的半径为200个单位
+		let steps: number = 18;
+		// 将圆分成上下各18个等分，-180°～180°，每个等分10°
+
+		// [ 0 , +180 ]度绘制u系数从0～1, v系数不变
+		// 导致的结果是x轴原点一直从左到右变动，y轴原点一直在上面（top）
+		for (let i = 0; i <= steps; i++) {
+			let n: number = i / steps;
+			this.translateRotateTranslateDrawRect(i * 10, n, 0, radius);
+		}
+
+		// [ 0 , -180 ]度绘制
+		// 导致的结果是y轴原点一直从上到下变动，x轴原点一直在左面（left）
+		for (let i = 0; i < steps; i++) {
+			let n: number = i / steps;
+			this.translateRotateTranslateDrawRect(-i * 10, 0, n, radius);
+		}
+		// 在画布中心的4个象限绘制不同u、v的矩形，可以看一下u、v不同系数产生的不同效果
+		this.context2D.save();
+		this.context2D.translate(this.canvas.width * 0.5 - radius *
+			0.4, this.canvas.height * 0.5 - radius * 0.4);
+		this.fillLocalRectWithTitleUV(100, 60, 'u = 0.5 / v = 0.5', 0.5,
+			0.5);
+		this.context2D.restore();
+		this.context2D.save();
+		this.context2D.translate(this.canvas.width * 0.5 + radius *
+			0.2, this.canvas.height * 0.5 - radius * 0.2);
+		this.fillLocalRectWithTitleUV(100, 60, 'u = 0 / v = 1', 0, 1);
+		this.context2D.restore();
+		this.context2D.save();
+		this.context2D.translate(this.canvas.width * 0.5 + radius *
+			0.3, this.canvas.height * 0.5 + radius * 0.4);
+		this.fillLocalRectWithTitleUV(100, 60, 'u = 0.3 / v = 0.6', 0.3,
+			0.6);
+		this.context2D.restore();
+		this.context2D.save();
+		this.context2D.translate(this.canvas.width * 0.5 - radius *
+			0.1, this.canvas.height * 0.5 + radius * 0.25);
+		this.fillLocalRectWithTitleUV(100, 60, 'u = 1 / v = 0.2', 1, 0.2);
+		this.context2D.restore();
+		// 使用10个单位线宽，半透明的颜色绘制圆的路径
+		this.strokeCircle(this.canvas.width * 0.5, this.canvas.height
+			* 0.5, radius, 'rgba( 0 , 255 , 255 , 0.5 )', 10);
+	}
+}
