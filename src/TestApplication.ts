@@ -933,8 +933,19 @@ export class TestApplication extends Canvas2DApplication {
 		}
 	}
 
-	// 这个方法名称按照变换顺序取名
-	// 其形成一个圆的路径，而且绘制物体的朝向和圆路径一致
+	/**
+	 * 通过translate将与全局坐标系重合的局部坐标系变换到画布的中心点。
+	 * 以变换后的局部坐标系的原点为转动点，旋转radians弧度，形成一个新的旋转后的局部坐标系。
+	 * 将位于画布中心的、旋转后的局部坐标系沿着x轴的正方向平移radius个单位后形成新的局部坐标系。
+	 * 在最后合成的局部坐标系中绘制矩形，该矩形的原点由u和v参数确定。
+	 *
+	 * @param degree
+	 * @param u
+	 * @param v
+	 * @param radius
+	 * @param width
+	 * @param height
+	 */
 	public translateRotateTranslateDrawRect(degree: number, u: number = 0, v: number = 0, radius = 200, width: number = 40, height: number = 20): void {
 		if (!this.context2D) return;
 
